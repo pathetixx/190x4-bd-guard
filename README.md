@@ -4,6 +4,11 @@ Keeps [BetterDiscord](https://github.com/BetterDiscord/BetterDiscord) alive acro
 
 A Discord update only wipes one thing: the `require("betterdiscord.asar")` line inside `discord_desktop_core/index.js`. Your plugins, themes and settings in `%AppData%\BetterDiscord` are never touched. BD Guard watches that file and puts the line back the moment the updater removes it.
 
+Patched locations (all Discord flavors, both updater layouts):
+
+- `%LocalAppData%\Discord*\app-<ver>\modules\discord_desktop_core-N\discord_desktop_core\index.js` (current updater)
+- `%AppData%\discord*\<ver>\modules\discord_desktop_core-N\discord_desktop_core\index.js` (legacy)
+
 ## How it works
 
 - Runs hidden at logon via Task Scheduler (no console window, ~0 resources).
