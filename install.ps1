@@ -27,10 +27,21 @@ Get-CimInstance Win32_Process -Filter "Name = 'powershell.exe'" -ErrorAction Sil
     ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
 
 Start-ScheduledTask -TaskName '190x4 BD Guard'
+
+# synchronous first repair - don't rely on the resident guard's startup timing
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $Dir 'bd-guard.ps1') -Once
 Write-Host 'BD Guard installed and running.' -ForegroundColor Green
 
 # --- status report ---
 Start-Sleep -Seconds 3
+
+$guardProc = Get-CimInstance Win32_Process -Filter "Name = 'powershell.exe'" -ErrorAction SilentlyContinue |
+    Where-Object { $_.CommandLine -match 'bd-guard\.ps1' -and $_.CommandLine -notmatch '-Once' }
+if ($guardProc) {
+    Write-Host '  guard process: running' -ForegroundColor Green
+} else {
+    Write-Host '  guard process: NOT running (scheduled task did not start)' -ForegroundColor Red
+}
 
 $bdAsar = Join-Path $env:APPDATA 'BetterDiscord\data\betterdiscord.asar'
 if (-not (Test-Path $bdAsar)) {

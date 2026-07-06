@@ -6,11 +6,15 @@
 #   new updater : %LocalAppData%\Discord*\app-<ver>\modules\discord_desktop_core-N\discord_desktop_core\index.js
 #   legacy      : %AppData%\discord*\<ver>\modules\discord_desktop_core-N\discord_desktop_core\index.js
 
+param([switch]$Once)  # -Once: single repair pass, no watcher
+
 $ErrorActionPreference = 'SilentlyContinue'
 
-# single instance
-$script:Mutex = New-Object System.Threading.Mutex($false, 'Global\190x4BDGuard')
-if (-not $script:Mutex.WaitOne(0)) { exit }
+if (-not $Once) {
+    # single resident instance
+    $script:Mutex = New-Object System.Threading.Mutex($false, 'Global\190x4BDGuard')
+    if (-not $script:Mutex.WaitOne(0)) { exit }
+}
 
 $BdAsar = Join-Path $env:APPDATA 'BetterDiscord\data\betterdiscord.asar'
 
@@ -79,7 +83,9 @@ function Repair-Injection {
 }
 
 # 1) fix stale state left from a previous session
-if (Repair-Injection) {
+$didPatch = Repair-Injection
+if ($Once) { exit }
+if ($didPatch) {
     Show-Toast 'BetterDiscord восстановлен после обновления Discord.'
 }
 
