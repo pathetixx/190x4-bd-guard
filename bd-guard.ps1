@@ -1,4 +1,4 @@
-# 190x4 BD Guard — keeps BetterDiscord injected across Discord updates.
+﻿# 190x4 BD Guard — keeps BetterDiscord injected across Discord updates.
 # Runs at logon (scheduled task), re-injects instantly when the updater
 # rewrites discord_desktop_core/index.js.
 #

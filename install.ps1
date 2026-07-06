@@ -2,11 +2,12 @@
 # logon task, (re)starts it and prints the injection status.
 $ErrorActionPreference = 'Stop'
 
-$Dir  = Join-Path $env:LOCALAPPDATA 'BDGuard'
-$Base = 'https://raw.githubusercontent.com/pathetixx/190x4-bd-guard/main'
+$Dir = Join-Path $env:LOCALAPPDATA 'BDGuard'
 
 New-Item -ItemType Directory -Force -Path $Dir | Out-Null
-Invoke-RestMethod "$Base/bd-guard.ps1" -OutFile (Join-Path $Dir 'bd-guard.ps1')
+# GitHub API instead of raw.githubusercontent: no 5-minute CDN cache
+Invoke-RestMethod 'https://api.github.com/repos/pathetixx/190x4-bd-guard/contents/bd-guard.ps1?ref=main' `
+    -Headers @{ Accept = 'application/vnd.github.raw' } -OutFile (Join-Path $Dir 'bd-guard.ps1')
 
 # wscript shim -> no console flash at logon
 $vbs = @"
